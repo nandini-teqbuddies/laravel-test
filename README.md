@@ -56,4 +56,9 @@ php artisan sail:install
 ./vendor/bin/sail up -d
 ```
 
-9.Visit [http://localhost](http://localhost)
+9. 
+```bash
+./vendor/bin/sail npm run dev
+```
+
+10. Visit [http://localhost](http://localhost)
