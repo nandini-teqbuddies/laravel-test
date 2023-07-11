@@ -11,14 +11,12 @@ class OrderController extends Controller
     public function index()
     {
         $products = Product::get(['id','name','price']);
-        $vouchers = Voucher::get(['id','description']);
+        $vouchers = Voucher::get(['id','name','description']);
         $data = [
             'products' => $products,
             'vouchers' => $vouchers
         ];
-        dump(session('cart'));
-       // session()->forget('cart');
-       //$this->applyDiscount();
+       $this->applyDiscount();
        return view('order', $data);
     }
 
@@ -44,7 +42,6 @@ class OrderController extends Controller
                 }
             $cart['products'] = $products;
         }
-       // dd($cart);
         session(['cart' => $cart]);
         return redirect(route('order.index'));
     }
@@ -76,9 +73,12 @@ class OrderController extends Controller
         $cart = session('cart');
         $vouchers = $cart['vouchers'] ?? [];
         if(isset($voucher)){
-            $voucherKey = array_search($data['voucherId'], $vouchers);
+            $voucherKey = array_search($data['voucherId'], array_column($vouchers, 'id'));
             if($voucherKey === false){
-                array_push($vouchers,$voucher->id);
+                array_push($vouchers,[
+                    'id' => $voucher->id,
+                    'name' =>  $voucher->name
+                ]);
             }
             $cart['vouchers'] = $vouchers;
         }
@@ -91,7 +91,7 @@ class OrderController extends Controller
         $data = $request->all();
         $cart = session('cart');
         $vouchers = $cart['vouchers'] ?? [];
-        $voucherKey = array_search($data['voucherId'], $vouchers);
+        $voucherKey = array_search($data['voucherId'], array_column($vouchers, 'id'));
         if($voucherKey !== false){
             unset($vouchers[$voucherKey]);
         }
@@ -108,25 +108,26 @@ class OrderController extends Controller
             ["id" => 3, "value" => 0],
         ];
 
-        $cart = session('cart');
-        $vouchers = $cart['vouchers'] ?? [];
+        $cart = session('cart',[]);
+        $vouchers = array_column($cart['vouchers'] ?? [],'id');
         $products = $cart['products'] ?? [];
+        $totalDiscount = 0;
+        $cartTotal = array_sum(array_map(function ($product) {
+            return ($product['qty'] * $product['price']);
+        }, $products));
+
         if(count($vouchers) > 0 && count($products)>0){
             foreach($products as $product){
-                if ($product['id'] == 1 && $product['quantity'] > 1 && in_array(1, $vouchers)) {
+                if ($product['id'] == 1 && $product['qty'] > 1 && in_array(1, $vouchers)) {
                     $discountPrice = ($product['price'] * 10) / 100;
                     $discounts[0]['value'] = $discountPrice;
                 }
 
                 if ($product['id'] == 2 && in_array(2, $vouchers)) {
-                    // Total of 5€ discount on Product B.
                     $discountPrice = 5;
                     $discounts[1]['value'] = $discountPrice;
                 }
-
-                $cartTotal = array_sum(array_map(function ($product) {
-                    return ($product['qty'] * $product['price']);
-                }, $products));
+                
                 $totalDiscount = array_sum(array_column($discounts, 'value'));
                 $currentCartValue = $cartTotal - $totalDiscount;
     
@@ -137,11 +138,11 @@ class OrderController extends Controller
 
             }
         }
-        array_push($cart, [
+        $cart = array_merge($cart, [
             "totalDiscount" => $totalDiscount,
             "cartTotal" => $cartTotal,
             "discounts" => $discounts
         ]);
-        session(['cart', $cart]);
+        session(['cart'=> $cart]);
     }
 }

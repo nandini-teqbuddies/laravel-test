@@ -35,7 +35,7 @@
             @foreach ($vouchers as $voucher)
                 <li class="list-group-item">
                 {{$voucher->description}}
-                @php $isAppliedVoucher = array_search($voucher->id, session('cart.vouchers',[])); @endphp
+                @php $isAppliedVoucher = array_search($voucher->id, array_column(session('cart.vouchers',[]),'id')); @endphp
                 @if($isAppliedVoucher === false)
                     <form method="POST" action="{{route('order.applyVoucher')}}">
                         @csrf
@@ -62,17 +62,17 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
                     <h5 class="">Total</h5>
-                    <p class="">{{session('cart.cartTotal')}}</p>
+                    <p class="">{{session('cart.cartTotal',0)}}</p>
                     <h5 class="">Discounts</h5>
-                    @foreach(session('cart.discounts',[]) as $discounts)
-                    @php $key = array_search($voucher->id, session('cart.vouchers',[])); @endphp
+                    @foreach(session('cart.discounts',[]) as $discount)
+                    @php $key = array_search($discount['id'], array_column(session('cart.vouchers',[]),'id')); @endphp
                         @if($key !== false)
-                        <p class="">{{session('cart.vouchers'.'.'.$key)}}</p>
-                        <p class="">{{$discounts.value}}</p>
+                        <p class="">{{session('cart.vouchers'.'.'.$key.'.name')}}</p>
+                        <p class="">{{$discount['value']}}</p>
                         @endif
                     @endforeach
                     <h5 class="">Grand Total</h5>
-                    <p>{{session('cart.totalDiscount')}}</p>
+                    <p>{{session('cart.cartTotal',0) - session('cart.totalDiscount',0)}}</p>
                 </li>
             </ul>
         </div>
