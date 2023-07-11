@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('products')->truncate();
         DB::table('products')->insert([
             [
                 'name' => 'Product A',
@@ -28,6 +29,7 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
+        DB::table('vouchers')->truncate();
         DB::table('vouchers')->insert([
             [
                 'name' => 'Voucher V',
