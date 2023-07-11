@@ -62,3 +62,9 @@ php artisan sail:install
 ```
 
 10. Visit [http://localhost](http://localhost)
+
+## Practical 1 [Link](http://localhost/order)
+![Alt text](Practical-1.png)
+
+## Practical 2 [Link](http://localhost/)
+![Alt text](Practical-2.png)
