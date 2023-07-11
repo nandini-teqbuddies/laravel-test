@@ -13,6 +13,34 @@ onMounted(async () => {
 </script>
 
 <template>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light px-5">
+            <a class="navbar-brand" href="#">Laravel Test</a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link active" href="#"
+                            >Bouquets</a
+                        >
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/order">Orders</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
     <div class="container mt-5">
         <div class="row">
             <div class="col">
@@ -30,10 +58,18 @@ onMounted(async () => {
             <div
                 v-for="bouquet in bouquets"
                 :key="bouquet.index"
-                class="col-md-5 m-5"
+                class="col-md-4 mt-5"
             >
                 <div class="card">
                     <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <img 
+                                :src="bouquet.url_image_sm_wp ?? 'https://d1mxm3s28igxxe.cloudfront.net/340x340wp/639357564c23f361573111.webp'" 
+                                alt=""
+                                height="340"
+                                width="340"
+                            >
+                        </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
                                 name: {{ bouquet.name }}
@@ -61,8 +97,9 @@ onMounted(async () => {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">
-                            Add Product
+                            Add Product 
                         </h5>
+                        <small class="ms-2">(Not working because api not provided)</small>
                         <button
                             type="button"
                             class="btn-close"
